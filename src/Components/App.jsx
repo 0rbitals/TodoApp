@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'reactstrap';
 import uuid from 'uuid';
 import Todo from './Todo';
 
@@ -49,10 +50,7 @@ class App extends Component {
             value={todoTitle}
             onChange={this.handleChange}
           />
-          <input
-            type="submit"
-            value="Submit"
-          />
+          <Button type="submit" color="danger">Submit</Button>
         </form>
         <br />
         <div id="todos">
