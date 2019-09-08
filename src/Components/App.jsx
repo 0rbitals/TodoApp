@@ -16,6 +16,7 @@ class App extends Component {
         },
       ],
       todoTitle: '',
+      editedTitle: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -25,8 +26,16 @@ class App extends Component {
   }
 
   handleChange(event) {
+    const { value } = event.target;
+    const { todos } = this.state;
+    if (todos.findIndex((item) => item.title === value) > -1) {
+      document.getElementById('submitButton').innerHTML = 'Edit';
+      this.setState({
+        editedTitle: value,
+      });
+    }
     this.setState({
-      todoTitle: [event.target.value],
+      todoTitle: value,
     });
   }
 
@@ -48,13 +57,16 @@ class App extends Component {
     const todoIndex = todos.findIndex((item) => item.title === todo);
     todos[todoIndex].title = todo;
     this.setState({
-      todoTitle: [todo],
+      todoTitle: todo,
+      editedTitle: todo,
     });
   }
 
   handleSubmit(event) {
     event.preventDefault();
-    if (event.target.name === 'deleteTodo') {
+    const { name } = event.target;
+    const { editedTitle } = this.state;
+    if (name === 'deleteTodo') {
       this.setState({
         todos: [],
       });
@@ -62,6 +74,18 @@ class App extends Component {
     }
     const { todo } = event.target;
     const { todos } = this.state;
+    const todoIndex = todos.findIndex((item) => item.title === editedTitle);
+    if (todoIndex > -1) {
+      todos[todoIndex].title = todo.value;
+      const editedTodos = todos;
+      this.setState({
+        todos: editedTodos,
+        editedTitle: '',
+        todoTitle: '',
+      });
+      document.getElementById('submitButton').innerHTML = 'Submit';
+      return;
+    }
     const newTodo = {
       id: uuid(),
       title: todo.value,
