@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Button } from 'reactstrap';
+import {
+  Container, Row, Col, Button, Card, CardBody, ListGroup, InputGroup, InputGroupAddon, Input,
+} from 'reactstrap';
 import uuid from 'uuid';
 import Todo from './Todo';
 
@@ -7,12 +9,19 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      todos: [],
+      todos: [
+        {
+          id: uuid(),
+          title: 'Wake up and brush my teeth',
+        },
+      ],
       todoTitle: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
   }
 
   handleChange(event) {
@@ -21,8 +30,36 @@ class App extends Component {
     });
   }
 
+  handleDelete(event) {
+    const todo = event.target.previousSibling.innerText;
+    const { todos } = this.state;
+    const todoIndex = todos.findIndex((item) => item.title === todo);
+    todos.splice(todoIndex, 1);
+    const updatedTodos = todos;
+    this.setState({
+      todos: updatedTodos,
+    });
+  }
+
+  handleEdit(event) {
+    const todo = event.target.previousSibling.previousSibling.innerText;
+    document.getElementById('submitButton').innerHTML = 'Edit';
+    const { todos } = this.state;
+    const todoIndex = todos.findIndex((item) => item.title === todo);
+    todos[todoIndex].title = todo;
+    this.setState({
+      todoTitle: [todo],
+    });
+  }
+
   handleSubmit(event) {
     event.preventDefault();
+    if (event.target.name === 'deleteTodo') {
+      this.setState({
+        todos: [],
+      });
+      return;
+    }
     const { todo } = event.target;
     const { todos } = this.state;
     const newTodo = {
@@ -41,24 +78,45 @@ class App extends Component {
       todoTitle, todos,
     } = this.state;
     return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <input
-            type="text"
-            name="todo"
-            placeholder="Write your TODO"
-            value={todoTitle}
-            onChange={this.handleChange}
-          />
-          <Button type="submit" color="danger">Submit</Button>
-        </form>
-        <br />
-        <div id="todos">
-          <ul>
-            { todos.map((item) => <Todo key={item.id} title={item.title} />) }
-          </ul>
-        </div>
-      </div>
+      <Container>
+        <Row style={{ marginTop: '100px' }} className="justify-content-center">
+          <Col xs="auto">
+            <Card>
+              <CardBody>
+                <form onSubmit={this.handleSubmit}>
+                  <InputGroup>
+                    <Input
+                      type="text"
+                      name="todo"
+                      placeholder="Write your TODO"
+                      value={todoTitle}
+                      onChange={this.handleChange}
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button type="submit" color="success" id="submitButton">Submit</Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: '25px' }} className="justify-content-center">
+          <Col xs="auto" id="todos">
+            <ListGroup onSubmit={this.handleSubmit} style={{ textAlign: 'center' }}>
+              { todos.map((item) => (
+                <Todo
+                  key={item.id}
+                  title={item.title}
+                  handleDelete={this.handleDelete}
+                  handleEdit={this.handleEdit}
+                />
+              ))}
+              {todos.length > 0 && <Button style={{ marginTop: '50px' }} onClick={this.handleSubmit} color="danger" name="deleteTodo">Delete All</Button>}
+            </ListGroup>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }
