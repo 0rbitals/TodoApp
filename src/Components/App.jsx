@@ -12,7 +12,7 @@ class App extends Component {
       todos: [
         {
           id: uuid(),
-          title: 'Wake up and brush my teeth',
+          title: 'Brush my teeth in the morning',
         },
       ],
       todoTitle: '',
@@ -112,7 +112,7 @@ class App extends Component {
                     <Input
                       type="text"
                       name="todo"
-                      placeholder="Write your TODO"
+                      placeholder="Write what you need to do."
                       value={todoTitle}
                       onChange={this.handleChange}
                     />
